@@ -30,10 +30,10 @@ jobs:
           npm run test --if-present
 
       - name: Copy artifact for deployment job
-          run: |
-            mkdir deploy
-            cp -r ./.next/standalone/. ./deploy
-            cp -r ./.next/static/. ./deploy/.next/static
+        run: |
+          mkdir deploy
+          cp -r ./.next/standalone/. ./deploy
+          cp -r ./.next/static/. ./deploy/.next/static
 
       - name: Zip artifact for deployment
         run: zip release.zip ./deploy -r
