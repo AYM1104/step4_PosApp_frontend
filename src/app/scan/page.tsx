@@ -11,7 +11,7 @@ import { Button, Card, CardContent, Typography, CardMedia } from '@mui/material'
 export default function ScanPage() {
     const [code, setCode] = useState<string>("");   // スキャンされたコード
     const [isScannerOpen, setIsScannerOpen] = useState(false);
-    const [product, setProduct] = useState<Product | null>(null);   // 商品情報
+    const [products, setProducts] = useState<Product[]>([]);;   // 商品情報
 
     // JANコードが更新されたら商品情報を取得
     useEffect(() => {
@@ -19,9 +19,7 @@ export default function ScanPage() {
 
         fetchProductFromDB(code).then((data) => {
             if (data) {
-                setProduct(data);
-            } else {
-                setProduct(null); // 見つからない場合はnullにリセット
+                setProducts((prev) => [...prev, data]);
             }
         });
     }, [code]);
@@ -47,9 +45,9 @@ export default function ScanPage() {
             {/* スキャン結果の表示 */}
             {code && <p>スキャン結果: {code}</p>}
 
-            {/* 商品情報の表示 */}
-            {product && (
-                <Card sx={{ maxWidth: 400, mt: 2 }}>
+            {/* 複数商品カードの表示 */}
+            {products.map((product, index) => (
+                <Card key={`${product.jan_code}-${index}`} sx={{ maxWidth: 400, mt: 2 }}>
                     {product.image_url && (
                         <CardMedia
                             component="img"
@@ -63,7 +61,7 @@ export default function ScanPage() {
                         <Typography variant="body2">価格: ¥{product.price}</Typography>
                     </CardContent>
                 </Card>
-            )}
+            ))}
         </div>
     );
 }
