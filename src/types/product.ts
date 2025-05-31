@@ -20,3 +20,16 @@ export type ScanTrigger = {
     code: string;           // スキャンされたJANコード
     timestamp: number;      // スカｙんされた時刻
 }
+
+// 楽天APIから取得した商品情報
+export type RakutenProductInfo = {
+  itemName: string;
+  genreId: string;
+};
+
+// 楽天APIから取得した商品ジャンル情報
+// export type ProductGenreInfo = {
+//   itemName: string;
+//   genreId: string;
+//   genreHierarchy: string;
+// };

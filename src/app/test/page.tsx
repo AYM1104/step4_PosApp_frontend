@@ -17,6 +17,8 @@ export default function TestScanPage() {
 
     const loadProduct = async () => {
       setLoading(true);
+
+      // JANコードAPIから商品情報を取得（商品名、商品画像）
       const result = await fetchProductInfoByJan(code);
       setProduct(result);
       setLoading(false);

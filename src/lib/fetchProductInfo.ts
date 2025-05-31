@@ -1,4 +1,4 @@
-// JANコードを使って商品情報を取得する
+// JANコードを使ってJANコードAPIから商品情報を取得する
 
 
 import { Product } from "@/types/product";
