@@ -1,6 +1,12 @@
 // POSアプリで使用する商品関連の型定義ファイル
 
-
+// カートに表示する商品情報
+export type CartItem = {
+    jan_code: string;       // JANコード（識別用）
+    name: string;           // 商品名
+    price: number;          // 価格（CartTableでは必須）
+    quantity: number;       // 数量（デフォルト1）
+};
 
 // 商品の基本情報
 export type Product = {
