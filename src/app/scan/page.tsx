@@ -51,6 +51,42 @@ export default function ScanPage() {
     });
   };
 
+  const handleCheckout = async () => {
+  if (cartItems.length === 0) {
+    alert('カートが空です');
+    return;
+  }
+
+  try {
+    const payload = {
+      items: cartItems.map((item) => ({
+        jan_code: item.jan_code,
+        name: item.name,
+        price: item.price,
+        quantity: item.quantity,
+      })),
+    };
+
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/transactions`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    });
+
+    if (!res.ok) {
+      throw new Error(`HTTP error! status: ${res.status}`);
+    }
+
+    alert('✅ 会計が完了しました');
+    setCartItems([]); // カートをリセット
+  } catch (error) {
+    console.error('❌ 会計処理エラー:', error);
+    alert('会計に失敗しました');
+  }
+};
+
   return (
     <div style={{ padding: 24 }}>
       <Typography variant="h5" gutterBottom>
@@ -73,6 +109,16 @@ export default function ScanPage() {
           setCartItems((items) => items.filter((i) => i.jan_code !== janCode))
         }
       />
+
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={handleCheckout}
+        style={{ marginTop: 16 }}
+      >
+        会計する
+      </Button>
+
     </div>
   );
 }
