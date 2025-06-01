@@ -1,67 +1,78 @@
-// バーコードをスキャンすると商品情報が表示されるページ
+'use client';
 
-'use client'
-
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from 'react';
 import BarcodeScanner from '../compornents/BarcodeScanner';
-import { fetchProductFromDB } from "@/lib/fetchProductFromDB";
-import { Product } from "@/types/product";
-import { Button, Card, CardContent, Typography, CardMedia } from '@mui/material';
+import CartTable from '../compornents/CartTable';
+import { fetchProductFromDB } from '@/lib/fetchProductFromDB';
+import { CartItem } from '@/types/product'; // ✅ 追加
+import { Button, Typography } from '@mui/material';
 
 export default function ScanPage() {
-    const [code, setCode] = useState<string>("");   // スキャンされたコード
-    const [isScannerOpen, setIsScannerOpen] = useState(false);
-    const [products, setProducts] = useState<Product[]>([]);;   // 商品情報
+  const [isScannerOpen, setIsScannerOpen] = useState(false);
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const beepAudio = useRef<HTMLAudioElement | null>(null);
+  const lastScanRef = useRef<{ jan_code: string; timestamp: number } | null>(null);
 
-    // JANコードが更新されたら商品情報を取得
-    useEffect(() => {
-        if (!code) return;
+  useEffect(() => {
+    beepAudio.current = new Audio('/sound/barcode.mp3');
+  }, []);
 
-        fetchProductFromDB(code).then((data) => {
-            if (data) {
-                setProducts((prev) => [...prev, data]);
-            }
-        });
-    }, [code]);
+  // ✅ ここに全てのロジックを集中
+  const handleDetect = (scannedCode: string) => {
+    const now = Date.now();
 
-    return (
-        <div style={{ padding: 24 }}>
-            <h2>商品をスキャンしてカードに追加するページ</h2>
-            <Button variant="contained" onClick={() => setIsScannerOpen(true)}>
-                スキャンを開始する
-            </Button>
+    if (
+      lastScanRef.current?.jan_code === scannedCode &&
+      now - lastScanRef.current.timestamp < 3000
+    ) {
+      console.log('⏳ 同じ商品を3秒以内に再スキャン → 無視');
+      return;
+    }
 
-            {/* isScannerOpen = trueの時だけカメラを表示 */}
-            {isScannerOpen && (
-                <div style={{ marginBottom: 16 }}>
-                    <BarcodeScanner
-                    onDetect={(code) => {
-                        setCode(code);
-                    }}
-                    />
-                </div>
-            )}
+    lastScanRef.current = { jan_code: scannedCode, timestamp: now };
 
-            {/* スキャン結果の表示 */}
-            {code && <p>スキャン結果: {code}</p>}
+    fetchProductFromDB(scannedCode).then((data) => {
+      if (data && data.price !== undefined) {
+        beepAudio.current?.play().catch((e) =>
+          console.warn('音声再生に失敗しました', e)
+        );
 
-            {/* 複数商品カードの表示 */}
-            {products.map((product, index) => (
-                <Card key={`${product.jan_code}-${index}`} sx={{ maxWidth: 400, mt: 2 }}>
-                    {product.image_url && (
-                        <CardMedia
-                            component="img"
-                            height="140"
-                            image={product.image_url}
-                            alt={product.name}
-                        />
-                    )}
-                    <CardContent>
-                        <Typography variant="body2">商品名: {product.name}</Typography>
-                        <Typography variant="body2">価格: ¥{product.price}</Typography>
-                    </CardContent>
-                </Card>
-            ))}
+        const newItem: CartItem = {
+          jan_code: data.jan_code,
+          name: data.name,
+          price: data.price,
+          quantity: 1,
+        };
+
+        setCartItems((prev) => [...prev, newItem]);
+      } else {
+        alert('商品が見つかりませんでした');
+      }
+    });
+  };
+
+  return (
+    <div style={{ padding: 24 }}>
+      <Typography variant="h5" gutterBottom>
+        商品をスキャンしてカートに追加
+      </Typography>
+
+      <Button variant="contained" onClick={() => setIsScannerOpen(true)}>
+        スキャンを開始する
+      </Button>
+
+      {isScannerOpen && (
+        <div style={{ marginTop: 16, marginBottom: 16 }}>
+          <BarcodeScanner onDetect={handleDetect} />
         </div>
-    );
+      )}
+
+      <CartTable
+        items={cartItems}
+        onDelete={(janCode: string) =>
+          setCartItems((items) => items.filter((i) => i.jan_code !== janCode))
+        }
+      />
+    </div>
+  );
 }
