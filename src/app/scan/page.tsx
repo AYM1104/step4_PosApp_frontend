@@ -10,6 +10,13 @@ import { Button, Typography } from '@mui/material';
 export default function ScanPage() {
   const [isScannerOpen, setIsScannerOpen] = useState(false);
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
+
+  const [receipt, setReceipt] = useState<{
+    total_excluding_tax: number;
+    total_tax: number;
+    total_amount: number;
+  } | null>(null); // ✅ レシート用ステートを追加
+
   const beepAudio = useRef<HTMLAudioElement | null>(null);
   const lastScanRef = useRef<{ jan_code: string; timestamp: number } | null>(null);
 
@@ -79,6 +86,16 @@ export default function ScanPage() {
       throw new Error(`HTTP error! status: ${res.status}`);
     }
 
+    const data = await res.json();
+    console.log('🧾 会計結果:', data);
+
+      // ✅ レシート情報をセット
+      setReceipt({
+        total_excluding_tax: data.total_excluding_tax,
+        total_tax: data.total_tax,
+        total_amount: data.total_amount,
+      });
+
     alert('✅ 会計が完了しました');
     setCartItems([]); // カートをリセット
   } catch (error) {
@@ -118,6 +135,17 @@ export default function ScanPage() {
       >
         会計する
       </Button>
+
+      {/* ✅ 会計後のレシート表示 */}
+      {receipt && (
+        <div style={{ marginTop: 24 }}>
+          <Typography variant="subtitle1">税抜金額: ¥{receipt.total_excluding_tax}</Typography>
+          <Typography variant="subtitle1">消費税: ¥{receipt.total_tax}</Typography>
+          <Typography variant="h6" style={{ fontWeight: 'bold' }}>
+            合計（税込）: ¥{receipt.total_amount}
+          </Typography>
+        </div>
+      )}
 
     </div>
   );
