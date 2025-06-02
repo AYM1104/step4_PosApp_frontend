@@ -21,13 +21,10 @@ export default function ScanPage() {
   const lastScanRef = useRef<{ jan_code: string; timestamp: number } | null>(null);
 
   const handleStartScan = () => {
-    if (!beepAudio.current) {
-      beepAudio.current = new Audio('/sound/barcode.mp3');
-      // ユーザー操作で初回再生を試みる
-      beepAudio.current.play().catch((e) =>
-        console.warn('🔈 初回音声再生は許可が必要です', e)
-      );
-    }
+    // ✅ 音声再生を一度試みる（スマホでの自動再生制限を回避）
+    beepAudio.current?.play().catch((e) =>
+      console.warn('📵 スマホの自動再生制限により音が鳴らない場合があります', e)
+    );
     setIsScannerOpen(true);
   };
 
