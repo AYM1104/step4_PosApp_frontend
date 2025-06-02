@@ -34,7 +34,7 @@ export default function BarcodeScanner({ onDetect }: Props) {
       lastDetectedTimeRef.current = now;
 
       // ✅ ビープ音再生（任意）
-      new Audio('/sound/beep.mp3').play().catch((e) => console.warn("音声エラー", e));
+      new Audio('/sound/barcode.mp3').play().catch((e) => console.warn("音声エラー", e));
 
       console.log('[📸 Detected]', code);
       onDetect(code);
