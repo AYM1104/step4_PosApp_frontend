@@ -20,6 +20,18 @@ export default function ScanPage() {
   const beepAudio = useRef<HTMLAudioElement | null>(null);
   const lastScanRef = useRef<{ jan_code: string; timestamp: number } | null>(null);
 
+  const handleStartScan = () => {
+    if (!beepAudio.current) {
+      beepAudio.current = new Audio('/sound/barcode.mp3');
+      // ユーザー操作で初回再生を試みる
+      beepAudio.current.play().catch((e) =>
+        console.warn('🔈 初回音声再生は許可が必要です', e)
+      );
+    }
+    setIsScannerOpen(true);
+  };
+
+
   useEffect(() => {
     beepAudio.current = new Audio('/sound/barcode.mp3');
   }, []);
@@ -110,7 +122,7 @@ export default function ScanPage() {
         商品をスキャンしてカートに追加
       </Typography>
 
-      <Button variant="contained" onClick={() => setIsScannerOpen(true)}>
+      <Button variant="contained" onClick={handleStartScan}>
         スキャンを開始する
       </Button>
 
