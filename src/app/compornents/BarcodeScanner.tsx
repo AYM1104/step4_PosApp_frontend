@@ -51,14 +51,29 @@ export default function BarcodeScanner({ onDetect }: Props) {
   }, [onDetect]);
 
   return (
-    <div style={{ position: 'relative', width: '100%', maxWidth: 480 }}>
+    <div
+      style={{
+        position: 'relative',
+        width: '100%',
+        maxWidth: 320, // ✅ スマホ対応
+        aspectRatio: '4 / 3', // 高さ自動調整
+        margin: '0 auto',
+        borderRadius: 8,
+        overflow: 'hidden',
+      }}
+    >
       {/* 📷 カメラ映像 */}
       <video
         ref={videoRef}
         autoPlay
         muted
         playsInline
-        style={{ width: '100%', maxWidth: '480px', borderRadius: '8px' }}
+        style={{
+          width: '100%',
+          height: '100%',
+          objectFit: 'cover',
+        }}
+        // style={{ width: '100%', maxWidth: '480px', borderRadius: '8px' }}
       />
 
       {/* 🕶️ グレーアウトオーバーレイ */}
