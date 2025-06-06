@@ -8,7 +8,9 @@
 
 
 
-// export default function ProductScanComponent() {
+export default function ProductScanComponent() {
+    return <div />;
+}
 //     // 状態の管理
 //     const [isScannerOpen, setIsScannerOpen] = useState(false);
 //     const [cartItems, setCartItems] = useState<CartItem[]>([]);

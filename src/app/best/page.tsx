@@ -1,5 +1,10 @@
 // 'use client';
 
+export default function BestPage() {
+  return <div />;
+}
+
+
 // import { Box, Stepper, Step, StepLabel } from '@mui/material';
 // import { useState } from 'react';
 
