@@ -1,16 +1,15 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import BarcodeScanner from '../compornents/BarcodeScanner';
+import BarcodeScanner from '../compornents/BarcodeScanner_0';
 import CartTable from '../compornents/CartTable';
 import { fetchProductFromDB } from '@/lib/fetchProductFromDB';
 import { CartItem } from '@/types/product'; // ✅ 追加
-import { Button, Typography } from '@mui/material';
+import { Button, Typography,Box } from '@mui/material';
 
 export default function ScanPage() {
   const [isScannerOpen, setIsScannerOpen] = useState(false);
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
-
   const [receipt, setReceipt] = useState<{
     total_excluding_tax: number;
     total_tax: number;
@@ -20,6 +19,10 @@ export default function ScanPage() {
   const beepAudio = useRef<HTMLAudioElement | null>(null);
   const lastScanRef = useRef<{ jan_code: string; timestamp: number } | null>(null);
 
+  useEffect(() => {
+    beepAudio.current = new Audio('/sound/barcode.mp3');
+  }, []);
+
   const handleStartScan = () => {
     // ✅ 音声再生を一度試みる（スマホでの自動再生制限を回避）
     beepAudio.current?.play().catch((e) =>
@@ -27,11 +30,6 @@ export default function ScanPage() {
     );
     setIsScannerOpen(true);
   };
-
-
-  useEffect(() => {
-    beepAudio.current = new Audio('/sound/barcode.mp3');
-  }, []);
 
   // ✅ ここに全てのロジックを集中
   const handleDetect = (scannedCode: string) => {
@@ -85,9 +83,7 @@ export default function ScanPage() {
 
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_ENDPOINT}/transactions`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
     });
 
@@ -114,7 +110,7 @@ export default function ScanPage() {
 };
 
   return (
-    <div style={{ padding: 24 }}>
+    <Box style={{ padding: 24 }}>
       <Typography variant="h5" gutterBottom>
         商品をスキャンしてカートに追加
       </Typography>
@@ -124,38 +120,55 @@ export default function ScanPage() {
       </Button>
 
       {isScannerOpen && (
-        <div style={{ marginTop: 16, marginBottom: 16 }}>
-          <BarcodeScanner onDetect={handleDetect} />
-        </div>
+        <Box
+          sx={{
+            mt: 2,
+            display: 'flex',
+            flexDirection: { xs: 'column', md: 'row' },
+            gap: 4,
+            alignItems: 'flex-start',
+          }}
+        >
+          
+
+          {/* 🛒 カート */}
+          <Box sx={{ flex: 1, minWidth: 0 }}>
+            <CartTable
+              items={cartItems}
+              onDelete={(janCode: string) =>
+                setCartItems((items) => items.filter((i) => i.jan_code !== janCode))
+              }
+            />
+          </Box>
+
+          {/* 📷 カメラ */}
+          <Box sx={{ flex: '0 0 auto' }}>
+            <BarcodeScanner onDetect={handleDetect} />
+          </Box>
+        </Box>
       )}
 
-      <CartTable
-        items={cartItems}
-        onDelete={(janCode: string) =>
-          setCartItems((items) => items.filter((i) => i.jan_code !== janCode))
-        }
-      />
-
+      {/* 会計ボタン */}
       <Button
         variant="contained"
         color="primary"
         onClick={handleCheckout}
-        style={{ marginTop: 16 }}
+        sx={{ mt: 2 }}
       >
         会計する
       </Button>
 
       {/* ✅ 会計後のレシート表示 */}
       {receipt && (
-        <div style={{ marginTop: 24 }}>
+        <Box sx={{ mt: 3 }}>
           <Typography variant="subtitle1">税抜金額: ¥{receipt.total_excluding_tax}</Typography>
           <Typography variant="subtitle1">消費税: ¥{receipt.total_tax}</Typography>
-          <Typography variant="h6" style={{ fontWeight: 'bold' }}>
+          <Typography variant="h6" fontWeight="bold">
             合計（税込）: ¥{receipt.total_amount}
           </Typography>
-        </div>
+        </Box>
       )}
 
-    </div>
+    </Box>
   );
 }

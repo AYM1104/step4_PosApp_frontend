@@ -1,7 +1,7 @@
 // src/app/compornents/CartTable.tsx
 'use client';
 
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography } from '@mui/material';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
 import { CartItem } from '@/types/product';
 
 type Props = {
@@ -9,12 +9,9 @@ type Props = {
   onDelete: (janCode: string) => void;
 };
 
-export default function CartTable({ items, onDelete }: Props) {
+export default function AddedItemTable({ items, onDelete }: Props) {
   return (
     <TableContainer component={Paper}>
-      <Typography variant="h6" sx={{ p: 2 }}>
-        カートに追加された商品
-      </Typography>
       <Table>
         <TableHead sx={{ backgroundColor: '#e0f2f1' }}>
           <TableRow>

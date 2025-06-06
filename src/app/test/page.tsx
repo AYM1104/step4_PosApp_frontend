@@ -1,6 +1,6 @@
 'use client';
 
-import BarcodeScanner from '../compornents/BarcodeScanner';
+import BarcodeScanner from '../compornents/BarcodeScanner_0';
 import { useState, useEffect } from 'react';
 import { fetchProductInfoByJan } from '@/lib/fetchProductInfo';
 import { Product } from '@/types/product';
