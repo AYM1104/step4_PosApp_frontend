@@ -3,6 +3,7 @@
 
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography, Button} from '@mui/material';
 import { CartItem } from '@/types/product';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 type Props = {
   items: CartItem[];
@@ -34,7 +35,16 @@ export default function CartTable({ items, onDelete }: Props) {
               <TableCell sx={{ width: '10%' }}>{item.quantity}</TableCell>
               <TableCell sx={{ width: '15%' }}>¥{item.price.toLocaleString()}</TableCell>
               <TableCell sx={{ width: '15%' }}>¥{(item.price * item.quantity).toLocaleString()}</TableCell>
-              <TableCell sx={{ width: '15%' }}><Button variant="outlined" color="error" onClick={() => onDelete(item.jan_code)}>削除</Button></TableCell>
+              <TableCell sx={{ width: '15%' }}>
+                <Button 
+                  variant="outlined" 
+                  color="error" 
+                  onClick={() => onDelete(item.jan_code)}
+                  startIcon={<DeleteIcon />}
+                >
+                  削除
+                </Button>
+              </TableCell>
             </TableRow>
           ))}
           {items.length > 0 ? (
