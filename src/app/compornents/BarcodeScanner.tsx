@@ -47,6 +47,7 @@ export default function BarcodeScanner({ onDetect }: Props) {
 
             // 3秒以内はスキップ（JANコードの重複には関係なく）
             if (now - lastDetectedTimeRef.current < 3000) {
+              isProcessingScanRef.current = false;
               return;
             }
 
