@@ -20,6 +20,7 @@ export default function BarcodeScanner({ onDetect }: Props) {
   const controlsRef = useRef<IScannerControls | null>(null);
   const lastDetectedTimeRef = useRef<number>(0);
   // const lastDetectedCodeRef = useRef<string | null>(null);
+  const isProcessingScanRef = useRef<boolean>(false);
   const isScanningRef = useRef<boolean>(true); // スキャン制御用フラグ
   const beepRef = useRef<HTMLAudioElement | null>(null);
 
@@ -53,22 +54,33 @@ export default function BarcodeScanner({ onDetect }: Props) {
             // lastDetectedCodeRef.current = code;
             lastDetectedTimeRef.current = now;
 
-            // ビープ音再生
-            beepRef.current?.play().catch((e) => {
-              console.warn("音声エラー", e);
-            });
+            if (isProcessingScanRef.current) return;
+            isProcessingScanRef.current = true;
+
+            try {
+              // ビープ音再生
+              beepRef.current?.play().catch((e) => {
+                console.warn("音声エラー", e);
+              });
+            onDetect(code); // 親に処理を渡す
+            } finally {
+              setTimeout(() => {
+                isProcessingScanRef.current = false;
+              }, 3000);
+            }
+          });
 
             isScanningRef.current = false; // スキャン停止フラグ
     
-            // 読み取ったコードを親へ渡す
-            onDetect(code);
+        //     // 読み取ったコードを親へ渡す
+        //     onDetect(code);
 
-            // 3秒後にスキャン再開
-            setTimeout(() => {
-              isScanningRef.current = true;
-            }, 3000);
-          }
-        );  
+        //     // 3秒後にスキャン再開
+        //     setTimeout(() => {
+        //       isScanningRef.current = true;
+        //     }, 3000);
+        //   }
+        // );  
 
         controlsRef.current = controls;
       } catch (err) {
