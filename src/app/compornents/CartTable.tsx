@@ -18,12 +18,12 @@ export default function CartTable({ items, onDelete }: Props) {
       <Table>
         <TableHead sx={{ backgroundColor: '#e0f2f1' }}>
           <TableRow>
-            <TableCell>No.</TableCell>
-            <TableCell>商品名称</TableCell>
-            <TableCell>数量</TableCell>
-            <TableCell>価格</TableCell> 
-            <TableCell>小計</TableCell>
-            <TableCell>操作</TableCell>
+            <TableCell sx={{ width: '5%' }}>No.</TableCell>
+            <TableCell sx={{ width: '40%' }}>商品名称</TableCell>
+            <TableCell sx={{ width: '10%' }}>数量</TableCell>
+            <TableCell sx={{ width: '15%' }}>価格</TableCell> 
+            <TableCell sx={{ width: '15%' }}>小計</TableCell>
+            <TableCell sx={{ width: '15%' }}>操作</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
