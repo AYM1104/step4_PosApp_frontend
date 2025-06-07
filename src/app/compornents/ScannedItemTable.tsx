@@ -16,7 +16,7 @@ export default function ScannedItemTable({ items, onAddToCart }: Props) {
       <Typography variant="h6" sx={{ p: 2 }}>
         スキャンされた商品
       </Typography>
-      <Table>
+      <Table sx={{ tableLayout: 'fixed' }}>
         <TableHead sx={{ backgroundColor: '#f5f5f5' }}>
           <TableRow>
             <TableCell sx={{ width: '20%' }}>JANコード</TableCell>

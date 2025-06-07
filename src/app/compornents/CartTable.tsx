@@ -15,7 +15,7 @@ export default function CartTable({ items, onDelete }: Props) {
       <Typography variant="h6" sx={{ p: 2 }}>
         カートに追加された商品
       </Typography>
-      <Table>
+      <Table sx={{ tableLayout: 'fixed' }}>
         <TableHead sx={{ backgroundColor: '#e0f2f1' }}>
           <TableRow>
             <TableCell sx={{ width: '5%' }}>No.</TableCell>
