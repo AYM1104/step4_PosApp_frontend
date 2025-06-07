@@ -28,10 +28,10 @@ export default function ScannedItemTable({ items, onAddToCart }: Props) {
         <TableBody>
           {items.map((item) => (
             <TableRow key={item.jan_code}>
-              <TableCell>{item.jan_code}</TableCell>
-              <TableCell>{item.name}</TableCell>
-              <TableCell>¥{item.price?.toLocaleString()}</TableCell>
-              <TableCell>
+              <TableCell sx={{ width: '20%' }}>{item.jan_code}</TableCell>
+              <TableCell sx={{ width: '50%' }}>{item.name}</TableCell>
+              <TableCell sx={{ width: '15%' }}>¥{item.price?.toLocaleString()}</TableCell>
+              <TableCell sx={{ width: '15%' }}>
                 <Button
                     variant="contained"
                     color="primary"

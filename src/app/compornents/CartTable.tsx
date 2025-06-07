@@ -29,12 +29,12 @@ export default function CartTable({ items, onDelete }: Props) {
         <TableBody>
           {items.map((item, index) => (
             <TableRow key={`${item.jan_code}-${index}`}>
-              <TableCell>{index + 1}</TableCell>
-              <TableCell>{item.name}</TableCell>
-              <TableCell>{item.quantity}</TableCell>
-              <TableCell>¥{item.price.toLocaleString()}</TableCell>
-              <TableCell>¥{(item.price * item.quantity).toLocaleString()}</TableCell>
-              <TableCell><Button variant="outlined" color="error" onClick={() => onDelete(item.jan_code)}>削除</Button></TableCell>
+              <TableCell sx={{ width: '5%' }}>{index + 1}</TableCell>
+              <TableCell sx={{ width: '40%' }}>{item.name}</TableCell>
+              <TableCell sx={{ width: '10%' }}>{item.quantity}</TableCell>
+              <TableCell sx={{ width: '15%' }}>¥{item.price.toLocaleString()}</TableCell>
+              <TableCell sx={{ width: '15%' }}>¥{(item.price * item.quantity).toLocaleString()}</TableCell>
+              <TableCell sx={{ width: '15%' }}><Button variant="outlined" color="error" onClick={() => onDelete(item.jan_code)}>削除</Button></TableCell>
             </TableRow>
           ))}
           {items.length > 0 ? (
