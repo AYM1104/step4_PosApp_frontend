@@ -50,11 +50,13 @@ export default function BarcodeScanner({ onDetect }: Props) {
               return;
             }
 
+            // スキャン開始
+            lastDetectedTimeRef.current = now;
+            const code = result.getText(); // バーコード取得
+
             // lastDetectedCodeRef.current = code;
             lastDetectedTimeRef.current = now;
             isProcessingScanRef.current = true;
-
-            const code = result.getText(); // バーコードの文字列を取得
 
             try {
               // ビープ音再生
@@ -71,16 +73,6 @@ export default function BarcodeScanner({ onDetect }: Props) {
 
             isScanningRef.current = false; // スキャン停止フラグ
     
-        //     // 読み取ったコードを親へ渡す
-        //     onDetect(code);
-
-        //     // 3秒後にスキャン再開
-        //     setTimeout(() => {
-        //       isScanningRef.current = true;
-        //     }, 3000);
-        //   }
-        // );  
-
         controlsRef.current = controls;
       } catch (err) {
         console.warn('[⚠️ スキャンエラー]', err);
