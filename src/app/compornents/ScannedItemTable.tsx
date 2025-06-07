@@ -19,10 +19,10 @@ export default function ScannedItemTable({ items, onAddToCart }: Props) {
       <Table>
         <TableHead sx={{ backgroundColor: '#f5f5f5' }}>
           <TableRow>
-            <TableCell>JANコード</TableCell>
-            <TableCell>商品名</TableCell>
-            <TableCell>価格</TableCell>
-            <TableCell>操作</TableCell>
+            <TableCell sx={{ width: '20%' }}>JANコード</TableCell>
+            <TableCell sx={{ width: '50%' }}>商品名</TableCell>
+            <TableCell sx={{ width: '15%' }}>価格</TableCell>
+            <TableCell sx={{ width: '15%' }}>操作</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
