@@ -19,7 +19,7 @@ export default function BarcodeScanner({ onDetect }: Props) {
   const videoRef = useRef<HTMLVideoElement>(null);    // HTMLのvideoタグを入れる箱
   const controlsRef = useRef<IScannerControls | null>(null);
   const lastDetectedTimeRef = useRef<number>(0);
-  const lastDetectedCodeRef = useRef<string | null>(null);
+  // const lastDetectedCodeRef = useRef<string | null>(null);
   const isScanningRef = useRef<boolean>(true); // スキャン制御用フラグ
   const beepRef = useRef<HTMLAudioElement | null>(null);
 
@@ -45,14 +45,12 @@ export default function BarcodeScanner({ onDetect }: Props) {
             const code = result.getText(); // バーコードの文字列を取得
             const now = Date.now();
 
-            // 3秒以内かつ同じコードはスキップ
-            if (
-            (code === lastDetectedCodeRef.current && now - lastDetectedTimeRef.current < 3000)
-            ) {
-                return;
+            // 3秒以内はスキップ（JANコードの重複には関係なく）
+            if (now - lastDetectedTimeRef.current < 3000) {
+              return;
             }
 
-            lastDetectedCodeRef.current = code;
+            // lastDetectedCodeRef.current = code;
             lastDetectedTimeRef.current = now;
 
             // ビープ音再生

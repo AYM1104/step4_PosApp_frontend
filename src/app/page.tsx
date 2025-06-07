@@ -132,7 +132,7 @@ export default function ScanPage() {
           }} />
         )}
       </Box>
-      <Box>
+      <Box mt={4}>
         {cartItems.length > 0 && (
           <Box mt={2} display="flex" justifyContent="flex-end">
             <button
