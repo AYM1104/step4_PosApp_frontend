@@ -143,15 +143,15 @@ export default function ScanPage() {
                 }
               }}
               style={{
-      backgroundColor: "#1976d2",
-      color: "#fff",
-      padding: "12px 24px",           // 少し大きめに調整
-      border: "none",
-      borderRadius: "6px",
-      fontSize: "20px",               // 👈 フォントサイズを大きく
-      fontWeight: "bold",            // 👈 太字で目立たせる
-      cursor: "pointer",
-    }}
+                backgroundColor: "#4caf50",
+                color: "#fff",
+                padding: "12px 24px",           // 少し大きめに調整
+                border: "none",
+                borderRadius: "6px",
+                fontSize: "20px",               // 👈 フォントサイズを大きく
+                fontWeight: "bold",            // 👈 太字で目立たせる
+                cursor: "pointer",
+              }}
             >
               購入する
             </button>
