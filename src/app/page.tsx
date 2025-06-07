@@ -125,14 +125,14 @@ export default function ScanPage() {
           <ScannedItemTable items={scannedItems} onAddToCart={handleAddToCart} />
         )}
       </Box>
-      <Box>
+      <Box mt={4}>
         {cartItems.length > 0 && (
           <CartTable items={cartItems} onDelete={(janCode) => {
             setCartItems(prev => prev.filter(item => item.jan_code !== janCode));
           }} />
         )}
       </Box>
-      <Box mt={4}>
+      <Box>
         {cartItems.length > 0 && (
           <Box mt={2} display="flex" justifyContent="flex-end">
             <button
