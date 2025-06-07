@@ -20,7 +20,7 @@ export default function CartTable({ items, onDelete }: Props) {
       <Table sx={{ tableLayout: 'fixed' }}>
         <TableHead sx={{ backgroundColor: '#e0f2f1' }}>
           <TableRow>
-            <TableCell align="center"  sx={{ width: '5%' }}>No.</TableCell>
+            <TableCell sx={{ width: '5%' }}>No.</TableCell>
             <TableCell align="center"  sx={{ width: '40%' }}>商品名称</TableCell>
             <TableCell align="center"  sx={{ width: '10%' }}>数量</TableCell>
             <TableCell align="center"  sx={{ width: '15%' }}>価格</TableCell> 
@@ -58,12 +58,12 @@ export default function CartTable({ items, onDelete }: Props) {
               <TableCell>
                 ¥{items.reduce((sum, item) => sum + item.price * item.quantity, 0).toLocaleString()}
                 <br />
-                <span style={{ fontSize: '0.6rem', marginLeft: 4 }}>(税抜)</span>
+                <span style={{ fontSize: '0.6rem', marginLeft: 4 }}>税抜</span>
               </TableCell>
               <TableCell>
                 ¥{Math.round(items.reduce((sum, item) => sum + item.price * item.quantity, 0) * 1.1).toLocaleString()}
                 <br />
-                <span style={{ fontSize: '0.6rem', marginLeft: 4 }}>(税込)</span>
+                <span style={{ fontSize: '0.6rem', marginLeft: 4 }}>税込</span>
               </TableCell>
             </TableRow>
           ) : null}
