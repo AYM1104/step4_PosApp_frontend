@@ -92,9 +92,9 @@ export default function BarcodeScanner({ onDetect }: Props) {
         style={{
             position: 'relative',
             width: '100%',
-            maxWidth: 280,
+            maxWidth: 260,
             // aspectRatio: '4 / 2',
-            height: 140,
+            height: 120,
             margin: '0 auto',
             borderRadius: 8,
             overflow: 'hidden',
