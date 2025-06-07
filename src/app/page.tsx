@@ -113,7 +113,7 @@ export default function ScanPage() {
 
         {/* 右側：カメラ映像 */}
         {isScannerOpen && (
-          <Box>
+          <Box minWidth={320}>
             <BarcodeScanner onDetect={handleDetected} />
           </Box>
         )}

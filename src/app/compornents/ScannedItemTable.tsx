@@ -39,8 +39,8 @@ export default function ScannedItemTable({ items, onAddToCart }: Props) {
                 {item.jan_code}
               </TableCell>
               <TableCell sx={{ width: '40%' }}>{item.name}</TableCell>
-              <TableCell sx={{ width: '15%' }}>¥{item.price?.toLocaleString()}</TableCell>
-              <TableCell sx={{ width: '25%' }}>
+              <TableCell align="center" sx={{ width: '15%' }}>¥{item.price?.toLocaleString()}</TableCell>
+              <TableCell align="center" sx={{ width: '25%' }}>
                 <IconButton
                   color="primary"
                   onClick={() => onAddToCart(item.jan_code)}
