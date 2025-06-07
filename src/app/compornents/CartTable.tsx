@@ -1,9 +1,10 @@
 // src/app/compornents/CartTable.tsx
 'use client';
 
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography, Button} from '@mui/material';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography } from '@mui/material';
 import { CartItem } from '@/types/product';
 import DeleteIcon from '@mui/icons-material/Delete';
+import IconButton from '@mui/material/IconButton';
 
 type Props = {
   items: CartItem[];
@@ -36,15 +37,17 @@ export default function CartTable({ items, onDelete }: Props) {
               <TableCell sx={{ width: '15%' }}>¥{item.price.toLocaleString()}</TableCell>
               <TableCell sx={{ width: '15%' }}>¥{(item.price * item.quantity).toLocaleString()}</TableCell>
               <TableCell sx={{ width: '15%' }}>
-                <Button 
-                  variant="outlined" 
-                  color="error" 
-                  onClick={() => onDelete(item.jan_code)}
-                  startIcon={<DeleteIcon />}
-                >
+              <IconButton
+                color="error"
+                onClick={() => onDelete(item.jan_code)}
+                sx={{ display: 'flex', flexDirection: 'column' }}
+              >
+                <DeleteIcon />
+                <Typography variant="caption" sx={{ mt: 0.5 }}>
                   削除
-                </Button>
-              </TableCell>
+                </Typography>
+              </IconButton>
+            </TableCell>
             </TableRow>
           ))}
           {items.length > 0 ? (
