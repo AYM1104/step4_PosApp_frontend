@@ -12,6 +12,8 @@ import CartTable from "./compornents/CartTable";  // 購入カートアイテム
 import { ScanItem, CartItem } from "@/types/product";
 import { fetchProductByJanCode } from "@/lib/fetchProductByJanCode";  // 商品取得関数
 
+import { postTransaction } from "@/lib/postTransaction";
+
 
 export default function ScanPage() {
   
@@ -73,12 +75,17 @@ export default function ScanPage() {
     const item = scannedItems.find(i => i.jan_code === janCode);
     if (!item) return;
 
-    const cartItem: CartItem = {
-      ...item,
-      quantity: 1,
-    };
+    setCartItems(prev => {
+      const existing = prev.find(i => i.jan_code === janCode);
+      if (existing) {
+        return prev.map(i =>
+          i.jan_code === janCode ? { ...i, quantity: i.quantity + 1 } : i
+        );
+      } else {
+        return [...prev, { ...item, quantity: 1 }];
+      }
+    });
 
-    setCartItems(prev => [...prev, cartItem]);
 
     // スキャンアイテムテーブルから削除
     setScannedItems(prev => prev.filter(i => i.jan_code !== janCode));
@@ -118,6 +125,37 @@ export default function ScanPage() {
           <CartTable items={cartItems} onDelete={(janCode) => {
             setCartItems(prev => prev.filter(item => item.jan_code !== janCode));
           }} />
+        )}
+      </Box>
+      <Box>
+        {cartItems.length > 0 && (
+          <Box mt={2} display="flex" justifyContent="flex-end">
+            <button
+              onClick={async () => {
+                try {
+                  await postTransaction(cartItems);
+                  alert("購入が完了しました！");
+                  setCartItems([]); // ✅ カートをクリア
+                  setIsScannerOpen(false); // ✅ カメラを閉じる
+                } catch (err) {
+                  alert("購入処理に失敗しました");
+                  console.error(err);
+                }
+              }}
+              style={{
+      backgroundColor: "#1976d2",
+      color: "#fff",
+      padding: "12px 24px",           // 少し大きめに調整
+      border: "none",
+      borderRadius: "6px",
+      fontSize: "20px",               // 👈 フォントサイズを大きく
+      fontWeight: "bold",            // 👈 太字で目立たせる
+      cursor: "pointer",
+    }}
+            >
+              購入する
+            </button>
+          </Box>
         )}
       </Box>
     </Box>

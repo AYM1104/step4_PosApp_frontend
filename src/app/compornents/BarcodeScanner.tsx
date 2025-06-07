@@ -15,60 +15,76 @@ type Props = {
 
 export default function BarcodeScanner({ onDetect }: Props) {
 
-    // 変数の宣言
-    const videoRef = useRef<HTMLVideoElement>(null);    // HTMLのvideoタグを入れる箱
-    const controlsRef = useRef<IScannerControls | null>(null);
-    const lastDetectedTimeRef = useRef<number>(0);
-    const lastDetectedCodeRef = useRef<string | null>(null);
-    const isScanningRef = useRef<boolean>(true); // ✅ スキャン制御用フラグ
+  // 変数の宣言
+  const videoRef = useRef<HTMLVideoElement>(null);    // HTMLのvideoタグを入れる箱
+  const controlsRef = useRef<IScannerControls | null>(null);
+  const lastDetectedTimeRef = useRef<number>(0);
+  const lastDetectedCodeRef = useRef<string | null>(null);
+  const isScanningRef = useRef<boolean>(true); // スキャン制御用フラグ
+  const beepRef = useRef<HTMLAudioElement | null>(null);
 
+  // コンポーネントを読み込んだ時 に実行する処理
+  useEffect(() => {
+    // ビープ音の事前ロード
+    beepRef.current = new Audio('/sound/barcode.mp3');
 
-    // コンポーネントを読み込んだ時 に実行する処理
-    useEffect(() => {
-        // ① 読み取り器の作成
-        const reader = new BrowserMultiFormatReader();
+    // ① 読み取り器の作成
+    const reader = new BrowserMultiFormatReader();
 
-        // ② カメラを起動して読み取り開始
-        reader.decodeFromVideoDevice(undefined, videoRef.current!, (result) => {
-        if (!result) return; // バーコードが読めなかったら何もしない
+    // ② カメラを起動して読み取り開始
+    const startScanner = async () => {
+      if (!videoRef.current) return;    // すでにスキャン中ならスキップ
 
-        const code = result.getText(); // バーコードの文字列を取得
-        const now = Date.now();
+      try {
+          const controls = await reader.decodeFromVideoDevice(
+          undefined,
+          videoRef.current,
+          (result) => {
+            if (!result || !isScanningRef.current) return;
 
-        // 3秒以内かつ同じコードはスキップ
-        if (
-        (code === lastDetectedCodeRef.current && now - lastDetectedTimeRef.current < 3000)
-        ) {
-            return;
-        }
+            const code = result.getText(); // バーコードの文字列を取得
+            const now = Date.now();
 
-        lastDetectedCodeRef.current = code;
-        lastDetectedTimeRef.current = now;
+            // 3秒以内かつ同じコードはスキップ
+            if (
+            (code === lastDetectedCodeRef.current && now - lastDetectedTimeRef.current < 3000)
+            ) {
+                return;
+            }
 
-        // ✅ ビープ音再生（任意）
-      new Audio('/sound/barcode.mp3').play().catch((e) => console.warn("音声エラー", e));
+            lastDetectedCodeRef.current = code;
+            lastDetectedTimeRef.current = now;
 
-        isScanningRef.current = false; // ✅ スキャン停止フラグ
+            // ビープ音再生
+            beepRef.current?.play().catch((e) => {
+              console.warn("音声エラー", e);
+            });
 
+            isScanningRef.current = false; // スキャン停止フラグ
     
-        // 読み取ったコードを親へ渡す
-        onDetect(code);
-        // ✅ 3秒後にスキャン再開
-        setTimeout(() => {
-            isScanningRef.current = true;
-        }, 3000);
-      }).then((controls) => {
+            // 読み取ったコードを親へ渡す
+            onDetect(code);
+
+            // 3秒後にスキャン再開
+            setTimeout(() => {
+              isScanningRef.current = true;
+            }, 3000);
+          }
+        );  
+
         controlsRef.current = controls;
-      }).catch((err) => {
+      } catch (err) {
         console.warn('[⚠️ スキャンエラー]', err);
-      });
+      }
+    };
 
+    startScanner();
 
-       // ④ 終了時にカメラを停止（コンポーネントが消えたとき）
-      return () => {
-        controlsRef.current?.stop();
-      };
-    });
+    // ④ 終了時にカメラを停止（コンポーネントが消えたとき）
+    return () => {
+      controlsRef.current?.stop();
+    };
+  }, [onDetect]);
 
     //  UI部分
     return (
