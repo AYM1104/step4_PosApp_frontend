@@ -2,8 +2,9 @@
 
 'use client';
 
-import { Table, Button, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography } from '@mui/material';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography, IconButton } from '@mui/material';
 import { ScanItem } from '@/types/product';
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 
 type Props = {
   items: ScanItem[];
@@ -19,10 +20,10 @@ export default function ScannedItemTable({ items, onAddToCart }: Props) {
       <Table sx={{ tableLayout: 'fixed' }}>
         <TableHead sx={{ backgroundColor: '#f5f5f5' }}>
           <TableRow>
-            <TableCell sx={{ width: '20%' }}>JANコード</TableCell>
-            <TableCell sx={{ width: '50%' }}>商品名</TableCell>
-            <TableCell sx={{ width: '15%' }}>価格</TableCell>
-            <TableCell sx={{ width: '15%' }}>操作</TableCell>
+            <TableCell align="center"  sx={{ width: '20%' }}>JANコード</TableCell>
+            <TableCell align="center"  sx={{ width: '40%' }}>商品名</TableCell>
+            <TableCell align="center"  sx={{ width: '15%' }}>価格</TableCell>
+            <TableCell align="center"  sx={{ width: '15%' }}>操作</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -40,14 +41,21 @@ export default function ScannedItemTable({ items, onAddToCart }: Props) {
               <TableCell sx={{ width: '40%' }}>{item.name}</TableCell>
               <TableCell sx={{ width: '15%' }}>¥{item.price?.toLocaleString()}</TableCell>
               <TableCell sx={{ width: '25%' }}>
-                <Button
-                    variant="contained"
-                    color="primary"
-                    size="small"
-                    onClick={() => onAddToCart(item.jan_code)} 
+                <IconButton
+                  color="primary"
+                  onClick={() => onAddToCart(item.jan_code)}
+                  sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    p: 1,
+                  }}
                 >
-                    カートに追加
-                </Button>
+                  <ShoppingCartIcon />
+                  <Typography variant="caption" sx={{ mt: 0.5, fontSize: '0.6rem' }}>
+                    追加
+                  </Typography>
+                </IconButton>
               </TableCell>
             </TableRow>
           ))}

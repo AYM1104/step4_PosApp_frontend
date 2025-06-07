@@ -20,12 +20,12 @@ export default function CartTable({ items, onDelete }: Props) {
       <Table sx={{ tableLayout: 'fixed' }}>
         <TableHead sx={{ backgroundColor: '#e0f2f1' }}>
           <TableRow>
-            <TableCell sx={{ width: '5%' }}>No.</TableCell>
-            <TableCell sx={{ width: '40%' }}>商品名称</TableCell>
-            <TableCell sx={{ width: '10%' }}>数量</TableCell>
-            <TableCell sx={{ width: '15%' }}>価格</TableCell> 
-            <TableCell sx={{ width: '15%' }}>小計</TableCell>
-            <TableCell sx={{ width: '15%' }}>操作</TableCell>
+            <TableCell align="center"  sx={{ width: '5%' }}>No.</TableCell>
+            <TableCell align="center"  sx={{ width: '40%' }}>商品名称</TableCell>
+            <TableCell align="center"  sx={{ width: '10%' }}>数量</TableCell>
+            <TableCell align="center"  sx={{ width: '15%' }}>価格</TableCell> 
+            <TableCell align="center"  sx={{ width: '15%' }}>小計</TableCell>
+            <TableCell align="center"  sx={{ width: '15%' }}>操作</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -43,7 +43,7 @@ export default function CartTable({ items, onDelete }: Props) {
                 sx={{ display: 'flex', flexDirection: 'column' }}
               >
                 <DeleteIcon />
-                <Typography variant="caption" sx={{ mt: 0.5 }}>
+                <Typography variant="caption" sx={{ mt: 0.5, fontSize: '0.6rem' }}>
                   削除
                 </Typography>
               </IconButton>
@@ -55,8 +55,16 @@ export default function CartTable({ items, onDelete }: Props) {
               <TableCell colSpan={2}>合計</TableCell>
               <TableCell>{items.reduce((sum, item) => sum + item.quantity, 0)} 点</TableCell>
               <TableCell><span style={{ display: 'none' }}>空</span></TableCell>
-              <TableCell>¥{items.reduce((sum, item) => sum + item.price * item.quantity, 0).toLocaleString()}（税抜）</TableCell>
-              <TableCell>¥{Math.round(items.reduce((sum, item) => sum + item.price * item.quantity, 0) * 1.1).toLocaleString()}（税込）</TableCell>
+              <TableCell>
+                ¥{items.reduce((sum, item) => sum + item.price * item.quantity, 0).toLocaleString()}
+                <br />
+                <span style={{ fontSize: '0.6rem', marginLeft: 4 }}>(税抜)</span>
+              </TableCell>
+              <TableCell>
+                ¥{Math.round(items.reduce((sum, item) => sum + item.price * item.quantity, 0) * 1.1).toLocaleString()}
+                <br />
+                <span style={{ fontSize: '0.6rem', marginLeft: 4 }}>(税込)</span>
+              </TableCell>
             </TableRow>
           ) : null}
         </TableBody>

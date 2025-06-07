@@ -102,17 +102,22 @@ export default function ScanPage() {
         <Typography variant="h5">POSアプリ</Typography>
       </Box>
 
-      {/* 商品スキャン部分 */}
-      <Box mb={2}>
+      <Box
+        display="flex"
+        alignItems="flex-start" // ← 上揃え
+        gap={2} // ← ボタンとカメラの間にスペース
+        mb={2}
+      >
+        {/* 左側：スキャンボタン */}
         <ScanButton onClick={handleScanButtonClick} />
-      </Box>
 
-      {/* スキャナーが開いている場合だけ表示 */}
-      {isScannerOpen && (
-        <Box mb={2}>
-          <BarcodeScanner onDetect={handleDetected} />
-        </Box>
-      )}
+        {/* 右側：カメラ映像 */}
+        {isScannerOpen && (
+          <Box>
+            <BarcodeScanner onDetect={handleDetected} />
+          </Box>
+        )}
+      </Box>
 
       {/* 読み取った商品情報を表示 */}
       <Box>
