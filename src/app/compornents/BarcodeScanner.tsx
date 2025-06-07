@@ -41,9 +41,8 @@ export default function BarcodeScanner({ onDetect }: Props) {
           undefined,
           videoRef.current,
           (result) => {
-            if (!result || !isScanningRef.current) return;
+            if (!result) return;
 
-            const code = result.getText(); // バーコードの文字列を取得
             const now = Date.now();
 
             // 3秒以内はスキップ（JANコードの重複には関係なく）
@@ -53,9 +52,9 @@ export default function BarcodeScanner({ onDetect }: Props) {
 
             // lastDetectedCodeRef.current = code;
             lastDetectedTimeRef.current = now;
-
-            if (isProcessingScanRef.current) return;
             isProcessingScanRef.current = true;
+
+            const code = result.getText(); // バーコードの文字列を取得
 
             try {
               // ビープ音再生
