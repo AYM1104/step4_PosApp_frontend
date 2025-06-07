@@ -51,6 +51,7 @@ export default function BarcodeScanner({ onDetect }: Props) {
               return;
             }
 
+            
             // スキャン開始
             lastDetectedTimeRef.current = now;
             const code = result.getText(); // バーコード取得

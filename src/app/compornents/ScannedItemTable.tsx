@@ -52,7 +52,7 @@ export default function ScannedItemTable({ items, onAddToCart }: Props) {
                   }}
                 >
                   <ShoppingCartIcon />
-                  <Typography variant="caption" sx={{ mt: 0.5, fontSize: '0.6rem' }}>
+                  <Typography variant="caption" sx={{ mt: 0.5, fontSize: '0.6rem',alignItems: 'center' }}>
                     追加
                   </Typography>
                 </IconButton>
