@@ -141,8 +141,8 @@ export default function ScanPage() {
               onClick={async () => {
                 try {
                   await postTransaction(cartItems);
-                  const cartParam = encodeURIComponent(JSON.stringify(cartItems));
-                  router.push(`/confirm?cart=${cartParam}`);
+                  localStorage.setItem('pos_cart', JSON.stringify(cartItems));
+                  router.push('/confirm');
                   // alert("購入が完了しました！");
                   setCartItems([]); // カートをクリア
                   setIsScannerOpen(false); // カメラを閉じる

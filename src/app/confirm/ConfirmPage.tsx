@@ -1,17 +1,29 @@
 'use client';
 
-import { useSearchParams, useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Box, Typography, Button } from '@mui/material';
 import Image from 'next/image';
+import { CartItem } from '@/types/product';
 
 export default function ConfirmPage() {
-  const searchParams = useSearchParams();
+  const [, setCartItems] = useState<CartItem[]>([]);
   const router = useRouter();
 
-  const cart = searchParams.get('cart');
+  // ✅ localStorageからカート情報を取得
+  useEffect(() => {
+    const json = localStorage.getItem('pos_cart');
+    if (json) {
+      try {
+        setCartItems(JSON.parse(json));
+      } catch (e) {
+        console.error('カートデータの読み込みに失敗しました', e);
+      }
+    }
+  }, []);
 
   const handleSendToLine = () => {
-    router.push(`/line/send?cart=${cart}`);
+    router.push('/line/send');
   };
 
   return (
@@ -23,7 +35,6 @@ export default function ConfirmPage() {
         ご希望の方はLINEにレシートを送信できます
       </Typography>
 
-      {/* ✅ ボタンを横並びに */}
       <Box display="flex" justifyContent="center" gap={2} mb={6}>
         <Button variant="contained" color="primary" onClick={handleSendToLine}>
           LINEに送信する
@@ -33,7 +44,6 @@ export default function ConfirmPage() {
         </Button>
       </Box>
 
-      {/* ✅ QRコード表示 */}
       <Box mt={6}>
         <Typography variant="body2" mb={2}>
           まだLINEの友だち登録をされていない方はこちら
@@ -50,4 +60,3 @@ export default function ConfirmPage() {
     </Box>
   );
 }
-

@@ -17,6 +17,10 @@ export default function LineSendContent() {
   const cartItems: CartItem[] = cartJson ? JSON.parse(decodeURIComponent(cartJson)) : [];
 
   const handleDetect = async (userId: string) => {
+    if (!userId) {
+    setMessage('ユーザーIDが無効です');
+    return;
+    }
     try {
       const result = await sendPurchaseToLine(userId, cartItems);
       setIsSent(result);
