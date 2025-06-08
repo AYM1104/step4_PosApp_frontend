@@ -22,19 +22,18 @@ export type QRCodeScannerRef = {
 function QRCodeScannerBase({ onDetect }: Props, ref: ForwardedRef<QRCodeScannerRef>) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const controlsRef = useRef<IScannerControls | null>(null);
-  const lastDetectedTimeRef = useRef<number>(0);
-  const isProcessingScanRef = useRef<boolean>(false);
-  const lastDetectedCodeRef = useRef<string | null>(null);
   const beepRef = useRef<HTMLAudioElement | null>(null);
+  const lastDetectedCodeRef = useRef<string | null>(null);
+  const hasDetectedRef = useRef<boolean>(false); // 👈 一度読み取りを防ぐ
   const router = useRouter();
 
   useImperativeHandle(ref, () => ({
     stop: () => {
       controlsRef.current?.stop();
-      // ✅ ビープ音を完全に停止
+      hasDetectedRef.current = false; // 👈 次回のためにリセット
       if (beepRef.current) {
-        beepRef.current.pause();           // 再生を止める
-        beepRef.current.currentTime = 0;   // 再生位置をリセット
+        beepRef.current.pause();
+        beepRef.current.currentTime = 0;
       }
     },
   }));
@@ -51,33 +50,28 @@ function QRCodeScannerBase({ onDetect }: Props, ref: ForwardedRef<QRCodeScannerR
           undefined,
           videoRef.current,
           (result) => {
-            if (!result) return;
-            const now = Date.now();
+            if (!result || hasDetectedRef.current) return;
 
-            if (now - lastDetectedTimeRef.current < 3000) {
-              isProcessingScanRef.current = false;
-              return;
-            }
-
-            lastDetectedTimeRef.current = now;
             const code = result.getText();
-            // ✅ 同じQRコードを連続で読み取らないようにする
             if (code === lastDetectedCodeRef.current) return;
-            lastDetectedCodeRef.current = code;
-            
-            lastDetectedTimeRef.current = now;
-            isProcessingScanRef.current = true;
 
-            try {
-              beepRef.current?.play().catch((e) => {
+            hasDetectedRef.current = true; // 👈 フラグを立てて再実行防止
+            lastDetectedCodeRef.current = code;
+
+            // ✅ カメラ停止
+            controlsRef.current?.stop();
+
+            // ✅ 音を再生（前の音が残ってたら止めてから）
+            if (beepRef.current) {
+              beepRef.current.pause();
+              beepRef.current.currentTime = 0;
+              beepRef.current.play().catch((e) => {
                 console.warn('音声再生エラー', e);
               });
-              onDetect(code);
-            } finally {
-              setTimeout(() => {
-                isProcessingScanRef.current = false;
-              }, 3000);
             }
+
+            // ✅ 親に伝える
+            onDetect(code);
           }
         );
 
@@ -169,6 +163,6 @@ function QRCodeScannerBase({ onDetect }: Props, ref: ForwardedRef<QRCodeScannerR
   );
 }
 
-// ✅ ここで default export を実現（forwardRefを使って）
+// ✅ forwardRefで export
 const QRCodeScanner = forwardRef(QRCodeScannerBase);
 export default QRCodeScanner;
