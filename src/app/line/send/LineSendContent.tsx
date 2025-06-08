@@ -14,6 +14,7 @@ export default function LineSendContent() {
   const [showScanner, setShowScanner] = useState(true); // ✅ 表示制御フラグ
   const scannerRef = useRef<QRCodeScannerRef>(null); // ✅ スキャナー停止用ref
   const router = useRouter();
+  const isScannerActive = useRef(true);
 
   useEffect(() => {
     const stored = localStorage.getItem('pos_cart');
@@ -31,6 +32,10 @@ export default function LineSendContent() {
   }, []);
 
   const handleDetect = async (userId: string) => {
+    // 🚫 すでに停止処理中なら無視
+    if (!isScannerActive.current) return;
+
+    isScannerActive.current = false; // ✅ 多重起動防止
     scannerRef.current?.stop(); // ✅ カメラと音を止める
 
     if (!userId) {
