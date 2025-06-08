@@ -11,6 +11,7 @@ export default function LineSendContent() {
   const [isSent, setIsSent] = useState(false);
   const [message, setMessage] = useState('');
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [, setShowScanner] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
@@ -49,8 +50,13 @@ export default function LineSendContent() {
 
     try {
       const result = await sendPurchaseToLine(userId, cartItems);
-      setIsSent(result);
-      setMessage(result ? 'LINEに購入内容を送信しました！' : 'LINE送信に失敗しました');
+      if (result) {
+        setIsSent(true);
+        setMessage('LINEに購入内容を送信しました！');
+        setShowScanner(false); // ✅ 成功時のみスキャナー非表示
+      } else {
+        setMessage('LINE送信に失敗しました');
+      }
     } catch (err) {
       console.error(err);
       setMessage('エラーが発生しました');
