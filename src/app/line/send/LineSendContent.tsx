@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Box, Typography, Button } from '@mui/material';
-import QRCodeScanner from '@/app/compornents/QRCodeScanner';
+import QRCodeScanner, { QRCodeScannerRef } from '@/app/compornents/QRCodeScanner';
 import { sendPurchaseToLine } from './sendToLine';
 import { useRouter } from 'next/navigation';
 import { CartItem } from '@/types/product';
@@ -11,32 +11,33 @@ export default function LineSendContent() {
   const [isSent, setIsSent] = useState(false);
   const [message, setMessage] = useState('');
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
-  const [, setShowScanner] = useState(true);
+  const [showScanner, setShowScanner] = useState(true); // ✅ 表示制御フラグ
+  const scannerRef = useRef<QRCodeScannerRef>(null); // ✅ スキャナー停止用ref
   const router = useRouter();
 
   useEffect(() => {
     const stored = localStorage.getItem('pos_cart');
     if (stored) {
-        try {
+      try {
         const parsed = JSON.parse(stored);
-        console.log('📦 読み込み成功:', parsed); // デバッグログ
+        console.log('📦 読み込み成功:', parsed);
         setCartItems(parsed);
-        } catch (err) {
+      } catch (err) {
         console.error('🛑 cartの読み取りに失敗', err);
-        }
+      }
     } else {
-        console.warn('⚠️ localStorage.pos_cart は空です');
+      console.warn('⚠️ localStorage.pos_cart は空です');
     }
-    }, []);
+  }, []);
 
   const handleDetect = async (userId: string) => {
+    scannerRef.current?.stop(); // ✅ カメラと音を止める
 
     if (!userId) {
       setMessage('ユーザーIDが無効です');
       return;
     }
 
-    // 🛒 localStorageから直接取得
     const stored = localStorage.getItem('pos_cart');
     const parsedCart: CartItem[] = stored ? JSON.parse(stored) : [];
 
@@ -44,16 +45,16 @@ export default function LineSendContent() {
     console.log("🛒 parsedCart:", parsedCart);
 
     if (parsedCart.length === 0) {
-        setMessage('カートが空です');
-        return;
+      setMessage('カートが空です');
+      return;
     }
 
     try {
-      const result = await sendPurchaseToLine(userId, cartItems);
+      const result = await sendPurchaseToLine(userId, parsedCart); // ✅ parsedCartを送信
       if (result) {
         setIsSent(true);
         setMessage('LINEに購入内容を送信しました！');
-        setShowScanner(false); // ✅ 成功時のみスキャナー非表示
+        setShowScanner(false); // ✅ 成功時のみ非表示
       } else {
         setMessage('LINE送信に失敗しました');
       }
@@ -67,10 +68,10 @@ export default function LineSendContent() {
     <Box p={2}>
       <Typography variant="h5" mb={2}>LINEに送信</Typography>
 
-      {!isSent && (
+      {showScanner && !isSent && (
         <>
           <Typography>QRコードをかざしてユーザーを認証してください</Typography>
-          <QRCodeScanner onDetect={handleDetect} />
+          <QRCodeScanner ref={scannerRef} onDetect={handleDetect} />
         </>
       )}
 
