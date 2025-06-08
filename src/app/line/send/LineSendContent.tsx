@@ -2,33 +2,25 @@
 
 import { useState } from 'react';
 import { Box, Typography, Button } from '@mui/material';
-import BarcodeScanner from '../compornents/BarcodeScanner';
-import { sendPurchaseToLine } from './send/sendToLine';
+import BarcodeScanner from '@/app/compornents/BarcodeScanner';
+import { sendPurchaseToLine } from './sendToLine';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { CartItem } from '@/types/product';
 
-export default function LineSendPage() {
-  const [, setUserId] = useState<string | null>(null);
+export default function LineSendContent() {
   const [isSent, setIsSent] = useState(false);
   const [message, setMessage] = useState('');
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  // クエリからカート内容を取得
   const cartJson = searchParams.get('cart');
   const cartItems: CartItem[] = cartJson ? JSON.parse(decodeURIComponent(cartJson)) : [];
 
-  const handleDetect = async (detectedUserId: string) => {
-    setUserId(detectedUserId);
-
+  const handleDetect = async (userId: string) => {
     try {
-      const result = await sendPurchaseToLine(detectedUserId, cartItems);
-      if (result) {
-        setIsSent(true);
-        setMessage('LINEに購入内容を送信しました！');
-      } else {
-        setMessage('LINE送信に失敗しました');
-      }
+      const result = await sendPurchaseToLine(userId, cartItems);
+      setIsSent(result);
+      setMessage(result ? 'LINEに購入内容を送信しました！' : 'LINE送信に失敗しました');
     } catch (err) {
       console.error(err);
       setMessage('エラーが発生しました');
@@ -41,7 +33,7 @@ export default function LineSendPage() {
 
       {!isSent && (
         <>
-          <Typography variant="body1" mb={1}>QRコードをかざしてユーザーを認証してください</Typography>
+          <Typography>QRコードをかざしてユーザーを認証してください</Typography>
           <BarcodeScanner onDetect={handleDetect} />
         </>
       )}
