@@ -10,7 +10,7 @@ import { CartItem } from '@/types/product';
 export default function LineSendContent() {
   const [isSent, setIsSent] = useState(false);
   const [message, setMessage] = useState('');
-  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [, setCartItems] = useState<CartItem[]>([]);
   const [showScanner, setShowScanner] = useState(true); // ✅ 表示制御フラグ
   const scannerRef = useRef<QRCodeScannerRef>(null); // ✅ スキャナー停止用ref
   const router = useRouter();
