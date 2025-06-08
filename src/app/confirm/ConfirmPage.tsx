@@ -17,7 +17,7 @@ export default function ConfirmPage() {
   return (
     <Box p={4} textAlign="center">
       <Typography variant="h4" gutterBottom>
-        🎉 購入が完了しました
+        購入が完了しました
       </Typography>
       <Typography variant="body1" mb={4}>
         ご希望の方はLINEにレシートを送信できます

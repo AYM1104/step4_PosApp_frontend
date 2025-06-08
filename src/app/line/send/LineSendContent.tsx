@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { Box, Typography, Button } from '@mui/material';
-import BarcodeScanner from '@/app/compornents/BarcodeScanner';
+import QRCodeScanner from '@/app/compornents/QRCodeScanner';
 import { sendPurchaseToLine } from './sendToLine';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { CartItem } from '@/types/product';
@@ -34,7 +34,7 @@ export default function LineSendContent() {
       {!isSent && (
         <>
           <Typography>QRコードをかざしてユーザーを認証してください</Typography>
-          <BarcodeScanner onDetect={handleDetect} />
+          <QRCodeScanner onDetect={handleDetect} />
         </>
       )}
 
