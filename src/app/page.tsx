@@ -142,7 +142,7 @@ export default function ScanPage() {
                 try {
                   await postTransaction(cartItems);
                   const cartParam = encodeURIComponent(JSON.stringify(cartItems));
-                  router.push(`/line/send?cart=${cartParam}`);
+                  router.push(`/confirm?cart=${cartParam}`);
                   // alert("購入が完了しました！");
                   setCartItems([]); // カートをクリア
                   setIsScannerOpen(false); // カメラを閉じる
@@ -157,8 +157,8 @@ export default function ScanPage() {
                 padding: "12px 24px",           // 少し大きめに調整
                 border: "none",
                 borderRadius: "6px",
-                fontSize: "20px",               // 👈 フォントサイズを大きく
-                fontWeight: "bold",            // 👈 太字で目立たせる
+                fontSize: "20px",               // フォントサイズを大きく
+                fontWeight: "bold",            // 太字
                 cursor: "pointer",
               }}
             >
