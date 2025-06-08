@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Box, Typography} from "@mui/material";
 
 // カスタムコンポーネント
@@ -16,6 +17,7 @@ import { postTransaction } from "@/lib/postTransaction";
 
 
 export default function ScanPage() {
+  const router = useRouter();
   
   // スキャナー表示状態の管理
   const [isScannerOpen, setIsScannerOpen] = useState(false);
@@ -139,9 +141,11 @@ export default function ScanPage() {
               onClick={async () => {
                 try {
                   await postTransaction(cartItems);
-                  alert("購入が完了しました！");
-                  setCartItems([]); // ✅ カートをクリア
-                  setIsScannerOpen(false); // ✅ カメラを閉じる
+                  const cartParam = encodeURIComponent(JSON.stringify(cartItems));
+                  router.push(`/confirm?cart=${cartParam}`);
+                  // alert("購入が完了しました！");
+                  setCartItems([]); // カートをクリア
+                  setIsScannerOpen(false); // カメラを閉じる
                 } catch (err) {
                   alert("購入処理に失敗しました");
                   console.error(err);
