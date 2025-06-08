@@ -1,26 +1,52 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Box, Typography, Button } from '@mui/material';
 import QRCodeScanner from '@/app/compornents/QRCodeScanner';
 import { sendPurchaseToLine } from './sendToLine';
-import { useSearchParams, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { CartItem } from '@/types/product';
 
 export default function LineSendContent() {
   const [isSent, setIsSent] = useState(false);
   const [message, setMessage] = useState('');
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const router = useRouter();
-  const searchParams = useSearchParams();
 
-  const cartJson = searchParams.get('cart');
-  const cartItems: CartItem[] = cartJson ? JSON.parse(decodeURIComponent(cartJson)) : [];
+  useEffect(() => {
+    const stored = localStorage.getItem('pos_cart');
+    if (stored) {
+        try {
+        const parsed = JSON.parse(stored);
+        console.log('📦 読み込み成功:', parsed); // デバッグログ
+        setCartItems(parsed);
+        } catch (err) {
+        console.error('🛑 cartの読み取りに失敗', err);
+        }
+    } else {
+        console.warn('⚠️ localStorage.pos_cart は空です');
+    }
+    }, []);
 
   const handleDetect = async (userId: string) => {
+
     if (!userId) {
-    setMessage('ユーザーIDが無効です');
-    return;
+      setMessage('ユーザーIDが無効です');
+      return;
     }
+
+    // 🛒 localStorageから直接取得
+    const stored = localStorage.getItem('pos_cart');
+    const parsedCart: CartItem[] = stored ? JSON.parse(stored) : [];
+
+    console.log("🛒 userId:", userId);
+    console.log("🛒 parsedCart:", parsedCart);
+
+    if (parsedCart.length === 0) {
+        setMessage('カートが空です');
+        return;
+    }
+
     try {
       const result = await sendPurchaseToLine(userId, cartItems);
       setIsSent(result);

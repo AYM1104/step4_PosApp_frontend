@@ -140,12 +140,18 @@ export default function ScanPage() {
             <button
               onClick={async () => {
                 try {
-                  await postTransaction(cartItems);
+                  // ① ローカルに保存（失敗しても送信には関係ないので先に実行）
                   localStorage.setItem('pos_cart', JSON.stringify(cartItems));
+
+                  // ② サーバーに送信
+                  await postTransaction(cartItems);
+
+                  // ③ 完了後に画面遷移
                   router.push('/confirm');
-                  // alert("購入が完了しました！");
-                  setCartItems([]); // カートをクリア
-                  setIsScannerOpen(false); // カメラを閉じる
+
+                  // ④ 画面リセット処理
+                  setCartItems([]);
+                  setIsScannerOpen(false);
                 } catch (err) {
                   alert("購入処理に失敗しました");
                   console.error(err);
