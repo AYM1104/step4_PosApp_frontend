@@ -30,6 +30,11 @@ function QRCodeScannerBase({ onDetect }: Props, ref: ForwardedRef<QRCodeScannerR
   useImperativeHandle(ref, () => ({
     stop: () => {
       controlsRef.current?.stop();
+      // ✅ ビープ音を完全に停止
+      if (beepRef.current) {
+        beepRef.current.pause();           // 再生を止める
+        beepRef.current.currentTime = 0;   // 再生位置をリセット
+      }
     },
   }));
 
