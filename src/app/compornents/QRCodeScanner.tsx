@@ -10,51 +10,80 @@ type Props = {
 };
 
 export default function QRCodeScanner({ onDetect }: Props) {
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const controlsRef = useRef<IScannerControls | null>(null);
-  const lastDetectedTimeRef = useRef<number>(0);
-  const isProcessingRef = useRef<boolean>(false);
-  const router = useRouter();
-
-  useEffect(() => {
-    const reader = new BrowserQRCodeReader();
-
-    const startScanner = async () => {
-      if (!videoRef.current) return;
-
-      try {
-        const controls = await reader.decodeFromVideoDevice(
-          undefined,
-          videoRef.current,
-          (result) => {
-            if (!result || isProcessingRef.current) return;
-
-            const now = Date.now();
-            if (now - lastDetectedTimeRef.current < 3000) return;
-
-            const code = result.getText();
-            isProcessingRef.current = true;
-            lastDetectedTimeRef.current = now;
-
-            onDetect(code);
-
-            setTimeout(() => {
-              isProcessingRef.current = false;
-            }, 3000);
-          }
-        );
-        controlsRef.current = controls;
-      } catch (err) {
-        console.warn('[⚠️ QRコード読み取りエラー]', err);
-      }
-    };
-
-    startScanner();
-
-    return () => {
-      controlsRef.current?.stop();
-    };
-  }, [onDetect]);
+    // 変数の宣言
+    const videoRef = useRef<HTMLVideoElement>(null);    // HTMLのvideoタグを入れる箱
+    const controlsRef = useRef<IScannerControls | null>(null);
+    const lastDetectedTimeRef = useRef<number>(0);
+    // const lastDetectedCodeRef = useRef<string | null>(null);
+    const isProcessingScanRef = useRef<boolean>(false);
+    const isScanningRef = useRef<boolean>(true); // スキャン制御用フラグ
+    const beepRef = useRef<HTMLAudioElement | null>(null);
+    const router = useRouter();
+  
+    // コンポーネントを読み込んだ時 に実行する処理
+    useEffect(() => {
+      // ビープ音の事前ロード
+      beepRef.current = new Audio('/sound/barcode.mp3');
+  
+      // ① 読み取り器の作成
+      const reader = new BrowserQRCodeReader();
+  
+      // ② カメラを起動して読み取り開始
+      const startScanner = async () => {
+        if (!videoRef.current) return;    // すでにスキャン中ならスキップ
+  
+        try {
+            const controls = await reader.decodeFromVideoDevice(
+            undefined,
+            videoRef.current,
+            (result) => {
+              if (!result) return;
+  
+              const now = Date.now();
+  
+              // 3秒以内はスキップ（JANコードの重複には関係なく）
+              if (now - lastDetectedTimeRef.current < 3000) {
+                isProcessingScanRef.current = false;
+                return;
+              }
+  
+              
+              // スキャン開始
+              lastDetectedTimeRef.current = now;
+              const code = result.getText(); // バーコード取得
+  
+              // lastDetectedCodeRef.current = code;
+              lastDetectedTimeRef.current = now;
+              isProcessingScanRef.current = true;
+  
+              try {
+                // ビープ音再生
+                beepRef.current?.play().catch((e) => {
+                  console.warn("音声エラー", e);
+                });
+              onDetect(code); // 親に処理を渡す
+              } finally {
+                setTimeout(() => {
+                  isProcessingScanRef.current = false;
+                }, 3000);
+              }
+            });
+  
+              isScanningRef.current = false; // スキャン停止フラグ
+      
+          controlsRef.current = controls;
+        } catch (err) {
+          console.warn('[⚠️ スキャンエラー]', err);
+        }
+      };
+  
+      startScanner();
+    
+      // ④ 終了時にカメラを停止（コンポーネントが消えたとき）
+      return () => {
+        controlsRef.current?.stop();
+      };
+    }, [onDetect]);
 
   return (
     <>
