@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Box, Typography, Button } from '@mui/material';
 import BarcodeScanner from '../compornents/BarcodeScanner';
 import { sendPurchaseToLine } from './sendToLine';
@@ -8,7 +8,7 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { CartItem } from '@/types/product';
 
 export default function LineSendPage() {
-  const [userId, setUserId] = useState<string | null>(null);
+  const [, setUserId] = useState<string | null>(null);
   const [isSent, setIsSent] = useState(false);
   const [message, setMessage] = useState('');
   const router = useRouter();

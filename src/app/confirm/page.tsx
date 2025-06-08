@@ -9,7 +9,7 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { CartItem } from '@/types/product';
 
 export default function LineConfirmPage() {
-  const [userId, setUserId] = useState<string | null>(null);
+  const [, setUserId] = useState<string | null>(null);
   const [isSent, setIsSent] = useState(false);
   const [isScanning, setIsScanning] = useState(false); // 👈 スキャナー表示管理
   const [message, setMessage] = useState('');
