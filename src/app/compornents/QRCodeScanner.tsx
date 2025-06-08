@@ -24,6 +24,7 @@ function QRCodeScannerBase({ onDetect }: Props, ref: ForwardedRef<QRCodeScannerR
   const controlsRef = useRef<IScannerControls | null>(null);
   const lastDetectedTimeRef = useRef<number>(0);
   const isProcessingScanRef = useRef<boolean>(false);
+  const lastDetectedCodeRef = useRef<string | null>(null);
   const beepRef = useRef<HTMLAudioElement | null>(null);
   const router = useRouter();
 
@@ -60,6 +61,11 @@ function QRCodeScannerBase({ onDetect }: Props, ref: ForwardedRef<QRCodeScannerR
 
             lastDetectedTimeRef.current = now;
             const code = result.getText();
+            // ✅ 同じQRコードを連続で読み取らないようにする
+            if (code === lastDetectedCodeRef.current) return;
+            lastDetectedCodeRef.current = code;
+            
+            lastDetectedTimeRef.current = now;
             isProcessingScanRef.current = true;
 
             try {
