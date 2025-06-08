@@ -4,7 +4,7 @@ import { Box, Button, Typography } from "@mui/material";
 import Image from 'next/image';
 import { useState } from 'react';
 import BarcodeScanner from '../compornents/BarcodeScanner';
-import { sendPurchaseToLine } from "../line/sendToLine";
+import { sendPurchaseToLine } from "../line/send/sendToLine";
 import { useSearchParams, useRouter } from 'next/navigation';
 import { CartItem } from '@/types/product';
 

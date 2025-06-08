@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { Box, Typography, Button } from '@mui/material';
 import BarcodeScanner from '../compornents/BarcodeScanner';
-import { sendPurchaseToLine } from './sendToLine';
+import { sendPurchaseToLine } from './send/sendToLine';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { CartItem } from '@/types/product';
 
