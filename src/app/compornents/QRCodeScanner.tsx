@@ -1,6 +1,12 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import {
+  useEffect,
+  useRef,
+  useImperativeHandle,
+  ForwardedRef,
+} from 'react';
+import { forwardRef } from 'react';
 import { BrowserQRCodeReader, IScannerControls } from '@zxing/browser';
 import { useRouter } from 'next/navigation';
 import { Button } from '@mui/material';
@@ -9,85 +15,76 @@ type Props = {
   onDetect: (code: string) => void;
 };
 
-export default function QRCodeScanner({ onDetect }: Props) {
-    // 変数の宣言
-    const videoRef = useRef<HTMLVideoElement>(null);    // HTMLのvideoタグを入れる箱
-    const controlsRef = useRef<IScannerControls | null>(null);
-    const lastDetectedTimeRef = useRef<number>(0);
-    // const lastDetectedCodeRef = useRef<string | null>(null);
-    const isProcessingScanRef = useRef<boolean>(false);
-    const isScanningRef = useRef<boolean>(true); // スキャン制御用フラグ
-    const beepRef = useRef<HTMLAudioElement | null>(null);
-    const router = useRouter();
-  
-    // コンポーネントを読み込んだ時 に実行する処理
-    useEffect(() => {
-      // ビープ音の事前ロード
-      beepRef.current = new Audio('/sound/barcode.mp3');
-  
-      // ① 読み取り器の作成
-      const reader = new BrowserQRCodeReader();
-  
-      // ② カメラを起動して読み取り開始
-      const startScanner = async () => {
-        if (!videoRef.current) return;    // すでにスキャン中ならスキップ
-  
-        try {
-            const controls = await reader.decodeFromVideoDevice(
-            undefined,
-            videoRef.current,
-            (result) => {
-              if (!result) return;
-  
-              const now = Date.now();
-  
-              // 3秒以内はスキップ（JANコードの重複には関係なく）
-              if (now - lastDetectedTimeRef.current < 3000) {
+export type QRCodeScannerRef = {
+  stop: () => void;
+};
+
+function QRCodeScannerBase({ onDetect }: Props, ref: ForwardedRef<QRCodeScannerRef>) {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const controlsRef = useRef<IScannerControls | null>(null);
+  const lastDetectedTimeRef = useRef<number>(0);
+  const isProcessingScanRef = useRef<boolean>(false);
+  const beepRef = useRef<HTMLAudioElement | null>(null);
+  const router = useRouter();
+
+  useImperativeHandle(ref, () => ({
+    stop: () => {
+      controlsRef.current?.stop();
+    },
+  }));
+
+  useEffect(() => {
+    beepRef.current = new Audio('/sound/barcode.mp3');
+    const reader = new BrowserQRCodeReader();
+
+    const startScanner = async () => {
+      if (!videoRef.current) return;
+
+      try {
+        const controls = await reader.decodeFromVideoDevice(
+          undefined,
+          videoRef.current,
+          (result) => {
+            if (!result) return;
+            const now = Date.now();
+
+            if (now - lastDetectedTimeRef.current < 3000) {
+              isProcessingScanRef.current = false;
+              return;
+            }
+
+            lastDetectedTimeRef.current = now;
+            const code = result.getText();
+            isProcessingScanRef.current = true;
+
+            try {
+              beepRef.current?.play().catch((e) => {
+                console.warn('音声再生エラー', e);
+              });
+              onDetect(code);
+            } finally {
+              setTimeout(() => {
                 isProcessingScanRef.current = false;
-                return;
-              }
-  
-              
-              // スキャン開始
-              lastDetectedTimeRef.current = now;
-              const code = result.getText(); // バーコード取得
-  
-              // lastDetectedCodeRef.current = code;
-              lastDetectedTimeRef.current = now;
-              isProcessingScanRef.current = true;
-  
-              try {
-                // ビープ音再生
-                beepRef.current?.play().catch((e) => {
-                  console.warn("音声エラー", e);
-                });
-              onDetect(code); // 親に処理を渡す
-              } finally {
-                setTimeout(() => {
-                  isProcessingScanRef.current = false;
-                }, 3000);
-              }
-            });
-  
-              isScanningRef.current = false; // スキャン停止フラグ
-      
-          controlsRef.current = controls;
-        } catch (err) {
-          console.warn('[⚠️ スキャンエラー]', err);
-        }
-      };
-  
-      startScanner();
-    
-      // ④ 終了時にカメラを停止（コンポーネントが消えたとき）
-      return () => {
-        controlsRef.current?.stop();
-      };
-    }, [onDetect]);
+              }, 3000);
+            }
+          }
+        );
+
+        controlsRef.current = controls;
+      } catch (err) {
+        console.warn('[⚠️ スキャンエラー]', err);
+      }
+    };
+
+    startScanner();
+
+    return () => {
+      controlsRef.current?.stop();
+    };
+  }, [onDetect]);
 
   return (
     <>
-      {/* 📷 カメラスキャナー */}
       <div
         style={{
           position: 'relative',
@@ -111,7 +108,6 @@ export default function QRCodeScanner({ onDetect }: Props) {
           }}
         />
 
-        {/* 🕶️ グレーオーバーレイ */}
         <div
           style={{
             position: 'absolute',
@@ -130,7 +126,6 @@ export default function QRCodeScanner({ onDetect }: Props) {
           }}
         />
 
-        {/* ⬜ コーナー */}
         {['topLeft', 'topRight', 'bottomLeft', 'bottomRight'].map((corner) => {
           const styles: Record<string, React.CSSProperties> = {
             topLeft: { top: '10%', left: '10%', borderTop: '4px solid white', borderLeft: '4px solid white' },
@@ -154,7 +149,6 @@ export default function QRCodeScanner({ onDetect }: Props) {
         })}
       </div>
 
-      {/* 🟦 トップへ戻るボタン */}
       <div style={{ textAlign: 'center', marginTop: '16px' }}>
         <Button variant="outlined" onClick={() => router.push('/')}>
           トップへ戻る
@@ -163,3 +157,7 @@ export default function QRCodeScanner({ onDetect }: Props) {
     </>
   );
 }
+
+// ✅ ここで default export を実現（forwardRefを使って）
+const QRCodeScanner = forwardRef(QRCodeScannerBase);
+export default QRCodeScanner;
