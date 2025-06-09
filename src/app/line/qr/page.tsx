@@ -13,7 +13,13 @@ function QRContent() {
   const userId = searchParams.get('user_id') ?? '';
 
   return (
-    <Box textAlign="center" mt={5}>
+    <Box
+      display="flex"
+      flexDirection="column"
+      justifyContent="center"
+      alignItems="center"
+      minHeight="100vh"
+    >
       <Typography variant="h6">あなた専用のQRコード</Typography>
       {userId ? (
         <QRCodeCanvas value={userId} size={256} />
