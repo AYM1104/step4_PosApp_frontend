@@ -1,13 +1,14 @@
-// src/app/line/qr/page.tsx
 'use client';
 
 import { useSearchParams } from 'next/navigation';
 import { QRCodeCanvas } from 'qrcode.react';
 import { Box, Typography } from '@mui/material';
+import { Suspense } from 'react';
 
 export const dynamic = 'force-dynamic';
 
-export default function QRPage() {
+// ✅ QRコード表示用の小さな部品
+function QRContent() {
   const searchParams = useSearchParams();
   const userId = searchParams.get('user_id') ?? '';
 
@@ -20,5 +21,14 @@ export default function QRPage() {
         <Typography color="error">ユーザーIDが取得できませんでした。</Typography>
       )}
     </Box>
+  );
+}
+
+// ✅ メインの画面（Suspenseでラップ）
+export default function QRPage() {
+  return (
+    <Suspense fallback={<div>読み込み中...</div>}>
+      <QRContent />
+    </Suspense>
   );
 }
