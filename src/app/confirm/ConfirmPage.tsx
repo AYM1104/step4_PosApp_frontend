@@ -32,7 +32,8 @@ export default function ConfirmPage() {
         購入が完了しました
       </Typography>
       <Typography variant="body1" mb={4}>
-        ご希望の方はLINEにレシートを送信できます
+        ご希望の方はLINEに購入履歴を送信できます。
+        友達登録が済んでいる方は、LINEに「QRコード」と入力すると専用QRコードが発行されます。
       </Typography>
 
       <Box display="flex" justifyContent="center" gap={2} mb={6}>
@@ -44,9 +45,11 @@ export default function ConfirmPage() {
         </Button>
       </Box>
 
-      <Box mt={6}>
+      <Box mt={6} display="flex" justifyContent="center">
         <Typography variant="body2" mb={2}>
           まだLINEの友だち登録をされていない方はこちら
+          ↓↓↓
+          〈LINE友だち登録用QRコード〉
         </Typography>
         <Box display="flex" justifyContent="center">
           <Image
