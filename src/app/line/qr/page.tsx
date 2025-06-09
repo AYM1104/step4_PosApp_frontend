@@ -5,6 +5,8 @@ import { useSearchParams } from 'next/navigation';
 import { QRCodeCanvas } from 'qrcode.react';
 import { Box, Typography } from '@mui/material';
 
+export const dynamic = 'force-dynamic';
+
 export default function QRPage() {
   const searchParams = useSearchParams();
   const userId = searchParams.get('user_id') ?? '';
